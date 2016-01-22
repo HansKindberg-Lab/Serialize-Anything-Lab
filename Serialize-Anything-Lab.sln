@@ -1,0 +1,73 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{09390632-7D93-4805-9099-AD7BC6B91792}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.config = .nuget\NuGet.config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeAnalysis", "CodeAnalysis", "{FB4EAC5E-3BC2-43D2-AB4D-A763EE7CCBF6}"
+	ProjectSection(SolutionItems) = preProject
+		CodeAnalysis\Solution.ruleset = CodeAnalysis\Solution.ruleset
+		CodeAnalysis\Solution.Tests.ruleset = CodeAnalysis\Solution.Tests.ruleset
+		CodeAnalysis\SolutionDictionary.xml = CodeAnalysis\SolutionDictionary.xml
+		CodeAnalysis\SolutionSuppressions.cs = CodeAnalysis\SolutionSuppressions.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Properties", "Properties", "{2D34CCA4-19BB-4006-A3F9-4596E716E23C}"
+	ProjectSection(SolutionItems) = preProject
+		Properties\Solution-AssemblyInfo.cs = Properties\Solution-AssemblyInfo.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Signing", "Signing", "{1B52DF28-6983-4796-9B26-531D2842949D}"
+	ProjectSection(SolutionItems) = preProject
+		Signing\ReadMe.txt = Signing\ReadMe.txt
+		Signing\StrongName.Development.snk = Signing\StrongName.Development.snk
+		Signing\StrongName.snk = Signing\StrongName.snk
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HansKindberg", "HansKindberg\HansKindberg.csproj", "{2008E944-1ABD-4EC9-9C62-AEC6320A7C71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HansKindberg.IntegrationTests", "HansKindberg.IntegrationTests\HansKindberg.IntegrationTests.csproj", "{EF109E11-5B27-4C84-89E3-1EF2EE128185}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HansKindberg.ShimTests", "HansKindberg.ShimTests\HansKindberg.ShimTests.csproj", "{5B740E25-AE29-4E50-BDFC-613EF47447F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HansKindberg.UnitTests", "HansKindberg.UnitTests\HansKindberg.UnitTests.csproj", "{DC36741F-9A8C-449D-AE21-0D9C37FFEF77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication", "WebApplication\WebApplication.csproj", "{65A3C898-2203-4C7D-9559-CD6452907E8C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2008E944-1ABD-4EC9-9C62-AEC6320A7C71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2008E944-1ABD-4EC9-9C62-AEC6320A7C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2008E944-1ABD-4EC9-9C62-AEC6320A7C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2008E944-1ABD-4EC9-9C62-AEC6320A7C71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF109E11-5B27-4C84-89E3-1EF2EE128185}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF109E11-5B27-4C84-89E3-1EF2EE128185}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF109E11-5B27-4C84-89E3-1EF2EE128185}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF109E11-5B27-4C84-89E3-1EF2EE128185}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B740E25-AE29-4E50-BDFC-613EF47447F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B740E25-AE29-4E50-BDFC-613EF47447F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B740E25-AE29-4E50-BDFC-613EF47447F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B740E25-AE29-4E50-BDFC-613EF47447F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC36741F-9A8C-449D-AE21-0D9C37FFEF77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC36741F-9A8C-449D-AE21-0D9C37FFEF77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC36741F-9A8C-449D-AE21-0D9C37FFEF77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC36741F-9A8C-449D-AE21-0D9C37FFEF77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65A3C898-2203-4C7D-9559-CD6452907E8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65A3C898-2203-4C7D-9559-CD6452907E8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65A3C898-2203-4C7D-9559-CD6452907E8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65A3C898-2203-4C7D-9559-CD6452907E8C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

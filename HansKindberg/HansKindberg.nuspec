@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+	<metadata>
+		<authors>$Author$</authors>
+		<description>$Description$</description>
+		<iconUrl>http://webtfs/SiteImages/Region-Örebro-län.32x32.png</iconUrl>
+		<id>$Id$</id>
+		<owners>$Author$</owners>
+		<projectUrl>http://webtfs:8080/tfs/web/UI/Pages/Scc/Explorer.aspx</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<tags></tags>
+		<title>$Title$</title>
+		<version>$Version$</version>
+	</metadata>
+</package>

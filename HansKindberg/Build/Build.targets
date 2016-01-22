@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<CoreBuildDependsOn>
+			ResolveSigning;
+			$(CoreBuildDependsOn);
+			BuildNuGetPackage;
+		</CoreBuildDependsOn>
+	</PropertyGroup>
+	<Target Name="BuildNuGetPackage">
+		<PropertyGroup>
+			<Properties>Configuration="$(Configuration)"</Properties>
+		</PropertyGroup>
+		<Exec
+			Command='"$(NuGetExePath)" pack "$(ProjectPath)" -IncludeReferencedProjects -OutputDirectory $(OutputPath) -Properties $(Properties) -Verbosity "$(NuGetVerbosity)"'
+		/>
+	</Target>
+	<Target Name="ResolveSigning">
+		<PropertyGroup>
+			<SignWithDevelopmentKey Condition="!Exists($(AssemblyOriginatorKeyFile))">true</SignWithDevelopmentKey>
+		</PropertyGroup>
+		<Warning
+			Condition="$(SignWithDevelopmentKey)"
+			Text="Sign warning. The strong-name-key-file '$(AssemblyOriginatorKeyFile)' does not exist. The assembly will be signed with a development-key."
+		/>
+		<PropertyGroup>
+			<AssemblyOriginatorKeyFile Condition="$(SignWithDevelopmentKey)">$(SolutionDir)Signing\$(StrongNameDevelopmentKeyFile)</AssemblyOriginatorKeyFile>
+		</PropertyGroup>
+	</Target>
+</Project>
