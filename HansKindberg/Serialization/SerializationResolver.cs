@@ -16,8 +16,10 @@ namespace HansKindberg.Serialization
 		#region Fields
 
 		private const BindingFlags _defaultBindings = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
-		private static readonly IDictionary<Type, IEnumerable<FieldInfo>> _fieldsCache = new Dictionary<Type, IEnumerable<FieldInfo>>();
-		private static readonly object _fieldsCacheLockObject = new object();
+		private static readonly IDictionary<Type, IEnumerable<FieldInfo>> _instanceAndStaticFieldsCache = new Dictionary<Type, IEnumerable<FieldInfo>>();
+		private static readonly object _instanceAndStaticFieldsCacheLockObject = new object();
+		private static readonly IDictionary<Type, IEnumerable<FieldInfo>> _instanceFieldsCache = new Dictionary<Type, IEnumerable<FieldInfo>>();
+		private static readonly object _instanceFieldsCacheLockObject = new object();
 
 		private static readonly Type[] _serializableBaseTypes =
 		{
@@ -70,9 +72,14 @@ namespace HansKindberg.Serialization
 		protected internal virtual BindingFlags DefaultBindings => _defaultBindings;
 
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		protected internal virtual IDictionary<Type, IEnumerable<FieldInfo>> FieldsCache => _fieldsCache;
+		protected internal virtual IDictionary<Type, IEnumerable<FieldInfo>> InstanceAndStaticFieldsCache => _instanceAndStaticFieldsCache;
 
-		protected internal virtual object FieldsCacheLockObject => _fieldsCacheLockObject;
+		protected internal virtual object InstanceAndStaticFieldsCacheLockObject => _instanceAndStaticFieldsCacheLockObject;
+
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		protected internal virtual IDictionary<Type, IEnumerable<FieldInfo>> InstanceFieldsCache => _instanceFieldsCache;
+
+		protected internal virtual object InstanceFieldsCacheLockObject => _instanceFieldsCacheLockObject;
 		public virtual bool InvestigateSerializability { get; set; }
 		protected internal virtual IMemoryFormatter MemoryFormatter { get; }
 		protected internal virtual IMemoryFormatterFactory MemoryFormatterFactory { get; }
@@ -143,14 +150,31 @@ namespace HansKindberg.Serialization
 
 			IEnumerable<FieldInfo> fields;
 
-			if(!this.FieldsCache.TryGetValue(type, out fields))
+			if((bindings & BindingFlags.Static) == BindingFlags.Static)
 			{
-				lock(this.FieldsCacheLockObject)
+				if(!this.InstanceAndStaticFieldsCache.TryGetValue(type, out fields))
 				{
-					if(!this.FieldsCache.TryGetValue(type, out fields))
+					lock(this.InstanceAndStaticFieldsCacheLockObject)
 					{
-						fields = this.GetFieldsInternal(type, bindings);
-						this.FieldsCache.Add(type, fields);
+						if(!this.InstanceAndStaticFieldsCache.TryGetValue(type, out fields))
+						{
+							fields = this.GetFieldsInternal(type, bindings);
+							this.InstanceAndStaticFieldsCache.Add(type, fields);
+						}
+					}
+				}
+			}
+			else
+			{
+				if(!this.InstanceFieldsCache.TryGetValue(type, out fields))
+				{
+					lock(this.InstanceFieldsCacheLockObject)
+					{
+						if(!this.InstanceFieldsCache.TryGetValue(type, out fields))
+						{
+							fields = this.GetFieldsInternal(type, bindings);
+							this.InstanceFieldsCache.Add(type, fields);
+						}
 					}
 				}
 			}
