@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web.UI;
+using Castle.DynamicProxy;
 using HansKindberg.Serialization;
 
 namespace WebApplication
@@ -14,7 +15,7 @@ namespace WebApplication
 		private IEnumerable<FieldInfo> _fields;
 		private bool? _includeStaticFields;
 		private const string _includeStaticFieldsKey = "IncludeStaticFields";
-		private static readonly SerializationResolver _serializationResolver = new SerializationResolver();
+		private static readonly SerializationResolver _serializationResolver = new SerializationResolver(new DefaultProxyBuilder(), new MemoryFormatterFactory());
 
 		#endregion
 

@@ -1,0 +1,30 @@
+﻿@model ITreeNode<FieldInfo>
+@helper RenderTree(ITreeNode<FieldInfo> node)
+{
+	<li>
+		<span><strong>Name: </strong>@node.Value.Name</span>
+		<br />
+		<span><strong>Declaring-type: </strong>@node.Value.DeclaringType</span>
+		<br />
+		<span><strong>Static: </strong>@node.Value.IsStatic</span>
+		@if(!node.IsLeaf)
+		{
+			<span>&#9660;</span>
+		}
+		@if(node.Children.Any())
+		{
+			<ul>
+				@foreach(var child in node.Children)
+				{
+					@RenderTree(child)
+				}
+			</ul>
+		}
+	</li>
+}
+@if(Model != null)
+{
+	<ul class="navigation">
+		@RenderTree(Model)
+	</ul>
+}

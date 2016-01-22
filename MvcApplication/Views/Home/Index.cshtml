@@ -1,0 +1,25 @@
+﻿@{ ViewBag.Title = "Home"; }
+@model MvcApplication.Models.ViewModels.HomeViewModel
+@section MainContent
+{
+	<p>Text from the start-page.</p>
+	<form action="#">
+		<fieldset>
+			<legend>Select</legend>
+			<fieldset>
+				<legend>Include static fields</legend>
+				<input@(Model.IncludeStaticFields ? " checked=\"checked\"" : string.Empty) id="include-static-fields-true" name="@Model.IncludeStaticFieldsKey" value="true" type="radio" />
+				<label for="include-static-fields-true">True</label>
+				<br />
+				<input@(!Model.IncludeStaticFields ? " checked=\"checked\"" : string.Empty) id="include-static-fields-false" name="@Model.IncludeStaticFieldsKey" value="false" type="radio" />
+				<label for="include-static-fields-false">False</label>
+			</fieldset>
+			<div class="button-area">
+				<button type="submit">Visa</button>
+			</div>
+		</fieldset>
+	</form>
+	<p>
+		<strong>Number of fields for "@Model.FieldTree.Value.DeclaringType": </strong>@Model.FieldTree.Descendants.Count()</p>
+	@Html.Partial("~/Views/Shared/FieldTree.cshtml", Model.FieldTree, new ViewDataDictionary())
+}

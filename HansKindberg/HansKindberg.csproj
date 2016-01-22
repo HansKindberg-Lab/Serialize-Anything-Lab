@@ -37,6 +37,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.3.3.3\lib\net40-client\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -51,11 +55,16 @@
     <Compile Include="$(SolutionDir)Properties\Solution-AssemblyInfo.cs">
       <Link>Properties\Solution-AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Serialization\Formatters\BinaryMemoryFormatter.cs" />
+    <Compile Include="Serialization\IMemoryFormatter.cs" />
+    <Compile Include="Serialization\IMemoryFormatterFactory.cs" />
     <Compile Include="Serialization\ISerializable.cs" />
     <Compile Include="Serialization\ISerializableFactory.cs" />
     <Compile Include="Serialization\ISerializationResolver.cs" />
+    <Compile Include="Serialization\MemoryFormatterFactory.cs" />
     <Compile Include="Serialization\Serializable.cs" />
     <Compile Include="Serialization\SerializableFactory.cs" />
+    <Compile Include="Serialization\SerializationFailure.cs" />
     <Compile Include="Serialization\SerializationResolver.cs" />
     <None Include="Build\Build.props" />
     <None Include="Build\Build.targets" />
@@ -71,6 +80,7 @@
     <None Include="$(SolutionDir)Signing\StrongName.snk">
       <Link>StrongName.snk</Link>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="Build\Build.targets" Condition="Exists('Build\Build.targets')" />
