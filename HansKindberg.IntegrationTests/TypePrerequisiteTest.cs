@@ -75,6 +75,49 @@ namespace HansKindberg.IntegrationTests
 			Assert.AreEqual(9, fields.Count(field => field.DeclaringType == typeof(BaseClass) && !field.IsPrivate));
 		}
 
+		[SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "a")]
+		[TestMethod]
+		public void InMscorlibThereAre308ValueTypesThatAreNotSerializable()
+		{
+			var assembly = typeof(string).Assembly;
+
+			Assert.AreEqual("mscorlib", assembly.GetName().Name);
+
+			Assert.AreEqual(308, assembly.GetTypes().Count(type => type.IsValueType && !type.IsSerializable));
+		}
+
+		[TestMethod]
+		public void InMscorlibThereAre3233Types()
+		{
+			var assembly = typeof(string).Assembly;
+
+			Assert.AreEqual("mscorlib", assembly.GetName().Name);
+
+			Assert.AreEqual(3233, assembly.GetTypes().Count());
+		}
+
+		[TestMethod]
+		public void InMscorlibThereAre869ValueTypes()
+		{
+			var assembly = typeof(string).Assembly;
+
+			Assert.AreEqual("mscorlib", assembly.GetName().Name);
+
+			Assert.AreEqual(869, assembly.GetTypes().Count(type => type.IsValueType));
+		}
+
+		[TestMethod]
+		public void IsSerializable_IfTheTypeHasASerializableAttribute_ShouldReturnTrue()
+		{
+			Assert.IsTrue(typeof(BaseClassWithSerializableAttribute).IsSerializable);
+		}
+
+		[TestMethod]
+		public void IsSerializable_IfTheTypeHasNoSerializableAttributeAndNoOtherSerializableImplementation_ShouldReturnFalse()
+		{
+			Assert.IsFalse(typeof(MainClassWithoutSerializableAttribute).IsSerializable);
+		}
+
 		#endregion
 	}
 }

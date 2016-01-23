@@ -80,7 +80,9 @@
   <ItemGroup>
     <Compile Include="FieldInfoPrerequisiteTest.cs" />
     <Compile Include="Mocks\BaseClass.cs" />
+    <Compile Include="Mocks\BaseClassWithSerializableAttribute.cs" />
     <Compile Include="Mocks\MainClass.cs" />
+    <Compile Include="Mocks\MainClassWithoutSerializableAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="$(SolutionDir)Properties\Solution-AssemblyInfo.cs">
       <Link>Properties\Solution-AssemblyInfo.cs</Link>
@@ -93,6 +95,7 @@
     <Compile Include="$(SolutionDir)CodeAnalysis\SolutionSuppressions.cs">
       <Link>CodeAnalysis\SolutionSuppressions.cs</Link>
     </Compile>
+    <Compile Include="Serialization\Formatters\BinaryMemoryFormatterTest.cs" />
     <Compile Include="Serialization\SerializationResolverTest.cs" />
     <Compile Include="TypePrerequisiteTest.cs" />
     <None Include="$(SolutionDir)Signing\StrongName.Development.snk">

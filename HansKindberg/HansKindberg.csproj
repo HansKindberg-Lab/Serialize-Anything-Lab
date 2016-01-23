@@ -55,13 +55,13 @@
     <Compile Include="$(SolutionDir)Properties\Solution-AssemblyInfo.cs">
       <Link>Properties\Solution-AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Serialization\FieldCacheKey.cs" />
     <Compile Include="Serialization\Formatters\BinaryMemoryFormatter.cs" />
-    <Compile Include="Serialization\IMemoryFormatter.cs" />
-    <Compile Include="Serialization\IMemoryFormatterFactory.cs" />
+    <Compile Include="Serialization\Formatters\IMemoryFormatter.cs" />
+    <Compile Include="Serialization\IFieldCacheKey.cs" />
     <Compile Include="Serialization\ISerializable.cs" />
     <Compile Include="Serialization\ISerializableFactory.cs" />
     <Compile Include="Serialization\ISerializationResolver.cs" />
-    <Compile Include="Serialization\MemoryFormatterFactory.cs" />
     <Compile Include="Serialization\Serializable.cs" />
     <Compile Include="Serialization\SerializableFactory.cs" />
     <Compile Include="Serialization\SerializationFailure.cs" />

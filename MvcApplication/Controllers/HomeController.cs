@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Castle.DynamicProxy;
 using HansKindberg.Collections.Generic;
 using HansKindberg.Serialization;
+using HansKindberg.Serialization.Formatters;
 using MvcApplication.Business.Reflection;
 using MvcApplication.Models.ViewModels;
 
@@ -17,7 +18,7 @@ namespace MvcApplication.Controllers
 		private static readonly ITreeFactory<FieldInfo> _fieldTreeFactory = new TreeFactory<FieldInfo>();
 		private bool? _includeStaticFields;
 		private const string _includeStaticFieldsKey = "IncludeStaticFields";
-		private static readonly ISerializationResolver _serializationResolver = new SerializationResolver(new DefaultProxyBuilder(), new MemoryFormatterFactory()) {InvestigateSerializability = true};
+		private static readonly ISerializationResolver _serializationResolver = new SerializationResolver(new BinaryMemoryFormatter(), new DefaultProxyBuilder()) {InvestigateSerializability = true};
 
 		#endregion
 

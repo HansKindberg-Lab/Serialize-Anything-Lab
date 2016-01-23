@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Castle.DynamicProxy;
 using HansKindberg.Serialization;
+using HansKindberg.Serialization.Formatters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HansKindberg.IntegrationTests.Serialization
@@ -10,7 +11,7 @@ namespace HansKindberg.IntegrationTests.Serialization
 	{
 		#region Fields
 
-		private static readonly SerializationResolver _serializationResolver = new SerializationResolver(new DefaultProxyBuilder(), new MemoryFormatterFactory());
+		private static readonly SerializationResolver _serializationResolver = new SerializationResolver(new BinaryMemoryFormatter(), new DefaultProxyBuilder());
 
 		#endregion
 

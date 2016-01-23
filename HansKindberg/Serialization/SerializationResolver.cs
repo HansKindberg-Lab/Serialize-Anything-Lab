@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Castle.DynamicProxy;
+using HansKindberg.Serialization.Formatters;
 
 namespace HansKindberg.Serialization
 {
@@ -15,20 +16,17 @@ namespace HansKindberg.Serialization
 	{
 		#region Fields
 
-		private const BindingFlags _defaultBindings = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
-		private static readonly IDictionary<Type, IEnumerable<FieldInfo>> _instanceAndStaticFieldsCache = new Dictionary<Type, IEnumerable<FieldInfo>>();
-		private static readonly object _instanceAndStaticFieldsCacheLockObject = new object();
-		private static readonly IDictionary<Type, IEnumerable<FieldInfo>> _instanceFieldsCache = new Dictionary<Type, IEnumerable<FieldInfo>>();
-		private static readonly object _instanceFieldsCacheLockObject = new object();
+		private const BindingFlags _defaultFieldBindings = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+		private static readonly IDictionary<IFieldCacheKey, IEnumerable<FieldInfo>> _fieldsCache = new Dictionary<IFieldCacheKey, IEnumerable<FieldInfo>>();
+		private static readonly object _fieldsCacheLockObject = new object();
+		private static readonly IDictionary<Type, bool> _serializabilityCache = new Dictionary<Type, bool>();
+		private static readonly object _serializabilityCacheLockObject = new object();
 
 		private static readonly Type[] _serializableBaseTypes =
 		{
 			typeof(Serializable),
 			typeof(ValueType)
 		};
-
-		private static readonly IDictionary<Type, bool> _serializableTypesCache = new Dictionary<Type, bool>();
-		private static readonly object _serializableTypesCacheLockObject = new object();
 
 		private static readonly Type[] _unserializableBaseTypes =
 		{
@@ -52,16 +50,15 @@ namespace HansKindberg.Serialization
 
 		#region Constructors
 
-		public SerializationResolver(IProxyBuilder proxyBuilder, IMemoryFormatterFactory memoryFormatterFactory)
+		public SerializationResolver(IMemoryFormatter memoryFormatter, IProxyBuilder proxyBuilder)
 		{
 			if(proxyBuilder == null)
 				throw new ArgumentNullException(nameof(proxyBuilder));
 
-			if(memoryFormatterFactory == null)
-				throw new ArgumentNullException(nameof(memoryFormatterFactory));
+			if(memoryFormatter == null)
+				throw new ArgumentNullException(nameof(memoryFormatter));
 
-			this.MemoryFormatter = memoryFormatterFactory.Create();
-			this.MemoryFormatterFactory = memoryFormatterFactory;
+			this.MemoryFormatter = memoryFormatter;
 			this.ProxyBuilder = proxyBuilder;
 		}
 
@@ -69,24 +66,18 @@ namespace HansKindberg.Serialization
 
 		#region Properties
 
-		protected internal virtual BindingFlags DefaultBindings => _defaultBindings;
+		protected internal virtual BindingFlags DefaultFieldBindings => _defaultFieldBindings;
 
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		protected internal virtual IDictionary<Type, IEnumerable<FieldInfo>> InstanceAndStaticFieldsCache => _instanceAndStaticFieldsCache;
+		protected internal virtual IDictionary<IFieldCacheKey, IEnumerable<FieldInfo>> FieldsCache => _fieldsCache;
 
-		protected internal virtual object InstanceAndStaticFieldsCacheLockObject => _instanceAndStaticFieldsCacheLockObject;
-
-		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		protected internal virtual IDictionary<Type, IEnumerable<FieldInfo>> InstanceFieldsCache => _instanceFieldsCache;
-
-		protected internal virtual object InstanceFieldsCacheLockObject => _instanceFieldsCacheLockObject;
+		protected internal virtual object FieldsCacheLockObject => _fieldsCacheLockObject;
 		public virtual bool InvestigateSerializability { get; set; }
 		protected internal virtual IMemoryFormatter MemoryFormatter { get; }
-		protected internal virtual IMemoryFormatterFactory MemoryFormatterFactory { get; }
 		protected internal virtual IProxyBuilder ProxyBuilder { get; }
+		protected internal virtual IDictionary<Type, bool> SerializabilityCache => _serializabilityCache;
+		protected internal virtual object SerializabilityCacheLockObject => _serializabilityCacheLockObject;
 		protected internal virtual IEnumerable<Type> SerializableBaseTypes => _serializableBaseTypes;
-		protected internal virtual IDictionary<Type, bool> SerializableTypesCache => _serializableTypesCache;
-		protected internal virtual object SerializableTypesCacheLockObject => _serializableTypesCacheLockObject;
 		public virtual IList<SerializationFailure> SerializationFailures { get; } = new List<SerializationFailure>();
 		protected internal virtual IEnumerable<Type> UnserializableBaseTypes => _unserializableBaseTypes;
 		protected internal virtual IEnumerable<Type> UnserializableDeclaringTypes => _unserializableDeclaringTypes;
@@ -133,7 +124,7 @@ namespace HansKindberg.Serialization
 			if(instance == null)
 				return Enumerable.Empty<FieldInfo>();
 
-			var bindings = this.DefaultBindings;
+			var bindings = this.DefaultFieldBindings;
 
 			if(includeStaticFields)
 				bindings = bindings | BindingFlags.Static;
@@ -148,33 +139,17 @@ namespace HansKindberg.Serialization
 
 			// ReSharper disable PossibleMultipleEnumeration
 
+			var fieldCacheKey = new FieldCacheKey(bindings, type);
 			IEnumerable<FieldInfo> fields;
 
-			if((bindings & BindingFlags.Static) == BindingFlags.Static)
+			if(!this.FieldsCache.TryGetValue(fieldCacheKey, out fields))
 			{
-				if(!this.InstanceAndStaticFieldsCache.TryGetValue(type, out fields))
+				lock(this.FieldsCacheLockObject)
 				{
-					lock(this.InstanceAndStaticFieldsCacheLockObject)
+					if(!this.FieldsCache.TryGetValue(fieldCacheKey, out fields))
 					{
-						if(!this.InstanceAndStaticFieldsCache.TryGetValue(type, out fields))
-						{
-							fields = this.GetFieldsInternal(type, bindings);
-							this.InstanceAndStaticFieldsCache.Add(type, fields);
-						}
-					}
-				}
-			}
-			else
-			{
-				if(!this.InstanceFieldsCache.TryGetValue(type, out fields))
-				{
-					lock(this.InstanceFieldsCacheLockObject)
-					{
-						if(!this.InstanceFieldsCache.TryGetValue(type, out fields))
-						{
-							fields = this.GetFieldsInternal(type, bindings);
-							this.InstanceFieldsCache.Add(type, fields);
-						}
+						fields = this.GetFieldsInternal(type, bindings);
+						this.FieldsCache.Add(fieldCacheKey, fields);
 					}
 				}
 			}
@@ -212,58 +187,40 @@ namespace HansKindberg.Serialization
 
 			var type = instance.GetType();
 
-			if(this.InvestigateSerializability)
-			{
-				bool isSerializable;
+			bool isSerializable;
 
-				if(!this.SerializableTypesCache.TryGetValue(type, out isSerializable))
+			if(!this.SerializabilityCache.TryGetValue(type, out isSerializable))
+			{
+				lock(this.SerializabilityCacheLockObject)
 				{
-					lock(this.SerializableTypesCacheLockObject)
+					if(!this.SerializabilityCache.TryGetValue(type, out isSerializable))
 					{
-						if(!this.SerializableTypesCache.TryGetValue(type, out isSerializable))
+						if(this.InvestigateSerializability)
 						{
 							try
 							{
 								this.MemoryFormatter.Serialize(instance);
 
-								this.SerializableTypesCache.Add(type, true);
-
-								return true;
+								isSerializable = true;
 							}
 							catch(SerializationException originalSerializationException)
 							{
+								isSerializable = false;
+
 								var serializationException = new SerializationException(string.Format(CultureInfo.InvariantCulture, "The type \"{0}\" could not be serialized.", instance.GetType().FullName), originalSerializationException);
 
 								if(this.SerializationFailures.Count == int.MaxValue)
 									this.SerializationFailures.RemoveAt(0);
 
 								this.SerializationFailures.Add(new SerializationFailure {Type = instance.GetType(), SerializationException = serializationException});
-
-								return false;
 							}
 						}
-					}
-				}
-			}
+						else
+						{
+							isSerializable = this.IsSerializable(type);
+						}
 
-			return this.IsSerializable(type);
-		}
-
-		protected internal virtual bool IsSerializable(Type type)
-		{
-			if(type == null)
-				throw new ArgumentNullException(nameof(type));
-
-			bool isSerializable;
-
-			if(!this.SerializableTypesCache.TryGetValue(type, out isSerializable))
-			{
-				lock(this.SerializableTypesCacheLockObject)
-				{
-					if(!this.SerializableTypesCache.TryGetValue(type, out isSerializable))
-					{
-						isSerializable = this.IsSerializableInternal(type);
-						this.SerializableTypesCache.Add(type, isSerializable);
+						this.SerializabilityCache.Add(type, isSerializable);
 					}
 				}
 			}
@@ -271,7 +228,7 @@ namespace HansKindberg.Serialization
 			return isSerializable;
 		}
 
-		protected internal virtual bool IsSerializableInternal(Type type)
+		protected internal virtual bool IsSerializable(Type type)
 		{
 			if(type == null)
 				throw new ArgumentNullException(nameof(type));

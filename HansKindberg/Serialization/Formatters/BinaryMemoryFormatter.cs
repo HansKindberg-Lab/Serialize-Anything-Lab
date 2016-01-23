@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Remoting.Messaging;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -48,35 +47,14 @@ namespace HansKindberg.Serialization.Formatters
 
 		#region Methods
 
-		public virtual object Deserialize(Stream serializationStream)
+		public virtual object Deserialize(string value)
 		{
-			return this.BinaryFormatter.Deserialize(serializationStream);
-		}
+			if(value == null)
+				throw new ArgumentNullException(nameof(value));
 
-		public virtual object Deserialize(Stream serializationStream, HeaderHandler handler)
-		{
-			return this.BinaryFormatter.Deserialize(serializationStream, handler);
-		}
-
-		public virtual object Deserialize(string serializationString)
-		{
-			if(serializationString == null)
-				throw new ArgumentNullException(nameof(serializationString));
-
-			using(var memoryStream = this.StringToMemoryStream(serializationString))
+			using(var memoryStream = this.StringToMemoryStream(value))
 			{
 				return this.BinaryFormatter.Deserialize(memoryStream);
-			}
-		}
-
-		public virtual object Deserialize(string serializationString, HeaderHandler handler)
-		{
-			if(serializationString == null)
-				throw new ArgumentNullException(nameof(serializationString));
-
-			using(var memoryStream = this.StringToMemoryStream(serializationString))
-			{
-				return this.BinaryFormatter.Deserialize(memoryStream, handler);
 			}
 		}
 
@@ -88,36 +66,14 @@ namespace HansKindberg.Serialization.Formatters
 			return Convert.ToBase64String(memoryStream.ToArray());
 		}
 
-		public virtual void Serialize(Stream serializationStream, object graph)
+		public virtual string Serialize(object instance)
 		{
-			this.BinaryFormatter.Serialize(serializationStream, graph);
-		}
-
-		public virtual void Serialize(Stream serializationStream, object graph, Header[] headers)
-		{
-			this.BinaryFormatter.Serialize(serializationStream, graph, headers);
-		}
-
-		public virtual string Serialize(object graph)
-		{
-			if(graph == null)
-				throw new ArgumentNullException(nameof(graph));
+			if(instance == null)
+				throw new ArgumentNullException(nameof(instance));
 
 			using(var memoryStream = new MemoryStream())
 			{
-				this.BinaryFormatter.Serialize(memoryStream, graph);
-				return this.MemoryStreamToString(memoryStream);
-			}
-		}
-
-		public virtual string Serialize(object graph, Header[] headers)
-		{
-			if(graph == null)
-				throw new ArgumentNullException(nameof(graph));
-
-			using(var memoryStream = new MemoryStream())
-			{
-				this.BinaryFormatter.Serialize(memoryStream, graph, headers);
+				this.BinaryFormatter.Serialize(memoryStream, instance);
 				return this.MemoryStreamToString(memoryStream);
 			}
 		}
